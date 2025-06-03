@@ -1,0 +1,4 @@
+name: imgz
+dependencies:
+  - anaconda::python
+  - anaconda::pip
