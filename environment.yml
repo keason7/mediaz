@@ -3,3 +3,5 @@ dependencies:
   - anaconda::python
   - anaconda::pip
   - anaconda::pillow
+  - pip:
+      - rawpy
