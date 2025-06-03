@@ -4,29 +4,6 @@ from PIL import Image
 
 from imgz.image.image import AbstractImage
 
-# known formats not supported by PIL
-# Raster image formats
-# ".heic",
-# ".heif",
-# ".avif",
-# ".jxl",
-# Vector image formats
-# ".svg",
-# ".pdf",
-# ".ai",
-# Raw image formats (camera)
-# ".raw",
-# ".cr2",
-# ".nef",
-# ".arw",
-# ".dng",
-# ".orf",
-# ".rw2",
-# Other / specialized formats
-# ".exr",
-# ".hdr",
-# ".xcf",
-
 
 _pil_formats = {
     "BMP": [".bmp"],
