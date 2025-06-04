@@ -1,9 +1,6 @@
-from pathlib import Path
-
 from PIL import Image
 
 from imgz.image.image import AbstractImage
-
 
 _pil_formats = {
     "BMP": [".bmp"],
@@ -29,6 +26,7 @@ _pil_formats = {
 class StandardImage(AbstractImage):
 
     def read(self, path):
+
         self.data_type = self._get_data_type(path, _pil_formats)
 
         if self.data_type is not None:
@@ -37,5 +35,16 @@ class StandardImage(AbstractImage):
         else:
             print("Invalid ext")
 
-    def write(self, path, filename):
-        self.data.save(str(Path(path) / f"{filename}{self.data_type['ext']}"), self.data_type["fmt"])
+    def write(self, path, out_data_type="JPEG"):
+
+        if self.data.mode != "RGB":
+            self.data = self.data.convert("RGB")
+
+        self.data.save(
+            path,
+            out_data_type,
+            quality=70,
+            optimize=True,
+            progressive=True,
+            subsampling=1,
+        )

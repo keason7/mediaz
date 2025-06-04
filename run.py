@@ -1,18 +1,10 @@
-from pathlib import Path
-
-from imgz.image.standard_image import StandardImage
+from imgz.compress import bulk_compress
 
 
 def main():
 
-    path = Path("/home/keason/Desktop/test_dir/")
-    files = list(path.glob("*"))
-
-    for i, item in enumerate(files):
-        si = StandardImage()
-
-        si.read(str(item))
-        si.write(str(path), f"test{i}")
+    path_in = "~/Desktop/code/imgz_tmp/test_dir"
+    bulk_compress(path_in)
 
 
 if __name__ == "__main__":

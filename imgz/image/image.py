@@ -11,12 +11,8 @@ class AbstractImage(ABC):
     def read(self, path):
         raise NotImplementedError("Method is not implemented.")
 
-    @abstractmethod
-    def write(self, path, filename):
-        raise NotImplementedError("Method is not implemented.")
-
     def _get_data_type(self, path, fmts):
-        ext = Path(path).suffix
+        ext = Path(path).suffix.lower()
 
         for fmt, exts in fmts.items():
             if ext in exts:
