@@ -1,5 +1,6 @@
 import datetime
-from pathlib import Path
+
+_out_data_types = {"JPEG": ".jpg"}
 
 
 def get_timestamp():
@@ -23,22 +24,29 @@ def create_project(path_in):
 
 
 def sanitize_paths(path_out_files):
+    path_out_files_sanitized = []
     path_count = {}
 
-    new_path_out = []
-
     for path in path_out_files:
-        path = Path(path)
-
-        stem, suffix = path.stem, path.suffix
-        parent = path.parent
-
         if str(path) not in path_count:
-            new_path_out.append(str(path))
             path_count[str(path)] = 0
+            path_out_files_sanitized.append(str(path))
         else:
             path_count[str(path)] += 1
-            new_name = f"{stem} ({path_count[str(path)]}){suffix}"
-            new_path_out.append(str(parent / new_name))
+            new_name = f"{path.stem} ({path_count[str(path)]}){path.suffix}"
+            path_out_files_sanitized.append(str(path.parent / new_name))
 
-    return new_path_out
+    return path_out_files_sanitized
+
+
+def get_files_paths(path_in, path_project, out_data_type):
+    if out_data_type not in _out_data_types.keys():
+        raise TypeError(f"Invalid output format. Available output formats: {list(_out_data_types.keys())}")
+
+    path_in_files = [path for path in path_in.rglob("*") if path.is_file()]
+    path_out_files = [
+        path_project / path_in_file.relative_to(path_in).with_suffix(_out_data_types[out_data_type])
+        for path_in_file in path_in_files
+    ]
+
+    return path_in_files, sanitize_paths(path_out_files)
