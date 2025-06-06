@@ -1,6 +1,6 @@
 import datetime
 
-_out_data_types = {"JPEG": ".jpg"}
+_out_dtypes = {"JPEG": ".jpg"}
 
 
 def get_timestamp():
@@ -39,13 +39,13 @@ def sanitize_paths(path_out_files):
     return path_out_files_sanitized
 
 
-def get_files_paths(path_in, path_project, out_data_type):
-    if out_data_type not in _out_data_types.keys():
-        raise TypeError(f"Invalid output format. Available output formats: {list(_out_data_types.keys())}")
+def get_files_paths(path_in, path_project, out_dtype):
+    if out_dtype not in _out_dtypes.keys():
+        raise TypeError(f"Invalid output format. Available output formats: {list(_out_dtypes.keys())}")
 
     path_in_files = [path for path in path_in.rglob("*") if path.is_file()]
     path_out_files = [
-        path_project / path_in_file.relative_to(path_in).with_suffix(_out_data_types[out_data_type])
+        path_project / path_in_file.relative_to(path_in).with_suffix(_out_dtypes[out_dtype])
         for path_in_file in path_in_files
     ]
 
