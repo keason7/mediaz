@@ -1,6 +1,7 @@
 import datetime
 
-_out_dtypes = {"JPEG": ".jpg"}
+from imgz.dtype.dtype import get_dtype
+from imgz.dtype.dtype_support import DataTypesOut
 
 
 def get_timestamp():
@@ -40,13 +41,14 @@ def sanitize_paths(path_out_files):
 
 
 def get_files_paths(path_in, path_project, out_dtype):
-    if out_dtype not in _out_dtypes.keys():
-        raise TypeError(f"Invalid output format. Available output formats: {list(_out_dtypes.keys())}")
+    dtype = get_dtype(DataTypesOut, fmt=out_dtype)
+
+    if dtype is None:
+        raise TypeError(f"Invalid output format. Available output formats: {list(DataTypesOut.keys())}")
 
     path_in_files = [path for path in path_in.rglob("*") if path.is_file()]
     path_out_files = [
-        path_project / path_in_file.relative_to(path_in).with_suffix(_out_dtypes[out_dtype])
-        for path_in_file in path_in_files
+        path_project / path_in_file.relative_to(path_in).with_suffix(dtype["ext"]) for path_in_file in path_in_files
     ]
 
     return path_in_files, sanitize_paths(path_out_files)

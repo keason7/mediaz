@@ -1,6 +1,8 @@
 import rawpy
 from PIL import Image
 
+from imgz.dtype.dtype_support import DataTypesIn
+
 
 class ImageMedia:
     def __init__(self, category):
@@ -17,13 +19,12 @@ class ImageMedia:
         self.data = Image.fromarray(rgb)
 
     def read(self, path, fmt):
-        if self.category == "pil":
+        if self.category == DataTypesIn.IMAGE_PIL.name:
             self.__read_pil(path, fmt)
         else:
             self.__read_raw(path)
 
     def write(self, path, out_dtype="JPEG"):
-
         if self.data.mode != "RGB":
             self.data = self.data.convert("RGB")
 

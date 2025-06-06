@@ -1,8 +1,8 @@
-from imgz.media_type.image_media import ImageMedia
+from enum import Enum
 
 
-_dtypes = {
-    "pil": {
+class DataTypesIn(Enum):
+    IMAGE_PIL = {
         "BMP": [".bmp"],
         "DDS": [".dds"],
         "DIB": [".dib"],
@@ -20,8 +20,9 @@ _dtypes = {
         "TGA": [".icb", ".tga", ".vda", ".vst"],
         "TIFF": [".tif", ".tiff"],
         "WEBP": [".webp"],
-    },
-    "raw": {
+    }
+
+    IMAGE_RAW = {
         "Generic": [".raw"],
         "Adobe": [".dng"],
         "Canon": [".cr2", ".cr3"],
@@ -37,29 +38,17 @@ _dtypes = {
         "Phase One": [".iiq"],
         "Samsung": [".srw"],
         "Sony": [".arw", ".srf", ".sr2"],
-    },
-}
+    }
 
 
-def get_dtype(path):
-    ext = path.suffix.lower()
+class DataTypesOut(Enum):
+    IMAGE_JPEG = {"JPEG": ".jpg"}
+    VIDEO_MP4 = {"MP4": ".mp4"}
 
-    for category, _ in _dtypes.items():
-        for fmt, exts in _dtypes[category].items():
+    @classmethod
+    def keys(cls):
+        return [key for member in cls for key in member.value.keys()]
 
-            if ext in exts:
-                return {"category": category, "fmt": fmt, "ext": ext}
-    return None
-
-
-def get_media_type(path):
-    dtype = get_dtype(path)
-
-    if dtype is None:
-        return None, None
-
-    elif dtype["category"] == "pil":
-        return ImageMedia(dtype["category"]), dtype
-
-    else:
-        return ImageMedia(dtype["category"]), dtype
+    @classmethod
+    def values(cls):
+        return [value for member in cls for value in member.value.values()]

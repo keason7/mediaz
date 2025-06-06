@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 
-from imgz.dtype import get_media_type
+from imgz.dtype.dtype import get_media_type
 from imgz.utils import get_files_paths
 
 
