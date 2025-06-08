@@ -1,7 +1,12 @@
-name: imgz
+name: mediaz
+channels:
+  - default
+  - conda-forge
 dependencies:
-  - anaconda::python
-  - anaconda::pip
-  - anaconda::pillow
+  - python==3.12.11
+  - pip==25.1.1
+  - pillow==11.2.1
+  - ffmpeg==7.1.1
+  - ffmpeg-python==0.2.0
   - pip:
-      - rawpy
+      - rawpy==0.25.0

@@ -40,6 +40,20 @@ class DataTypesIn(Enum):
         "Sony": [".arw", ".srf", ".sr2"],
     }
 
+    VIDEO = {
+        "MP4": [".mp4"],
+        "MPEG": [".mpg", ".mpeg"],
+        "AVI": [".avi"],
+        "MKV": [".mkv"],
+        "MOV": [".mov"],
+        "WMV": [".wmv"],
+        "FLV": [".flv"],
+        "WebM": [".webm"],
+        "OGG": [".ogv", ".ogg"],
+        "3GP": [".3gp"],
+        "MTS": [".mts", ".m2ts"],
+    }
+
 
 class DataTypesOut(Enum):
     IMAGE_JPEG = {"JPEG": ".jpg"}

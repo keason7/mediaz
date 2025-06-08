@@ -1,22 +1,22 @@
 import rawpy
 from PIL import Image
 
-from imgz.dtype.dtype_support import DataTypesIn
+from mediaz.dtype.dtype_support import DataTypesIn
 
 
 class ImageMedia:
     def __init__(self, category):
-        self.data = None
+        self.img = None
         self.category = category
 
     def __read_pil(self, path, fmt):
-        self.data = Image.open(path, formats=[fmt])
+        self.img = Image.open(path, formats=[fmt])
 
     def __read_raw(self, path):
         with rawpy.imread(path) as raw:
             rgb = raw.postprocess()
 
-        self.data = Image.fromarray(rgb)
+        self.img = Image.fromarray(rgb)
 
     def read(self, path, fmt):
         if self.category == DataTypesIn.IMAGE_PIL.name:
@@ -24,13 +24,12 @@ class ImageMedia:
         else:
             self.__read_raw(path)
 
-    def write(self, path, out_dtype="JPEG"):
-        if self.data.mode != "RGB":
-            self.data = self.data.convert("RGB")
+    def write(self, path):
+        if self.img.mode != "RGB":
+            self.img = self.img.convert("RGB")
 
-        self.data.save(
+        self.img.save(
             path,
-            out_dtype,
             quality=70,
             optimize=True,
             progressive=True,

@@ -1,7 +1,7 @@
 import datetime
 
-from imgz.dtype.dtype import get_dtype
-from imgz.dtype.dtype_support import DataTypesOut
+from mediaz.dtype.dtype import get_dtype
+from mediaz.dtype.dtype_support import DataTypesIn, DataTypesOut
 
 
 def get_timestamp():
@@ -41,14 +41,30 @@ def sanitize_paths(path_out_files):
 
 
 def get_files_paths(path_in, path_project, out_dtype):
-    dtype = get_dtype(DataTypesOut, fmt=out_dtype)
-
-    if dtype is None:
-        raise TypeError(f"Invalid output format. Available output formats: {list(DataTypesOut.keys())}")
+    for _, dtype in out_dtype.items():
+        if dtype["fmt"] not in DataTypesOut.keys():
+            raise TypeError(f"Invalid output format. Available output formats: {list(DataTypesOut.keys())}")
 
     path_in_files = [path for path in path_in.rglob("*") if path.is_file()]
-    path_out_files = [
-        path_project / path_in_file.relative_to(path_in).with_suffix(dtype["ext"]) for path_in_file in path_in_files
-    ]
+    path_out_files = []
+
+    for path_in_file in path_in_files:
+
+        dtype = get_dtype(DataTypesIn, ext=path_in_file.suffix)
+
+        if dtype is None:
+            path_out_files.append(
+                path_project / path_in_file.relative_to(path_in).with_suffix(path_in_file.suffix.lower())
+            )
+
+        elif dtype["category"] in [DataTypesIn.IMAGE_PIL.name, DataTypesIn.IMAGE_RAW.name]:
+            path_out_files.append(
+                path_project / path_in_file.relative_to(path_in).with_suffix(out_dtype["image"]["ext"])
+            )
+
+        else:
+            path_out_files.append(
+                path_project / path_in_file.relative_to(path_in).with_suffix(out_dtype["video"]["ext"])
+            )
 
     return path_in_files, sanitize_paths(path_out_files)

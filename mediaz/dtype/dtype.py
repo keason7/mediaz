@@ -1,5 +1,6 @@
-from imgz.dtype.dtype_support import DataTypesIn
-from imgz.media_type.image_media import ImageMedia
+from mediaz.dtype.dtype_support import DataTypesIn
+from mediaz.media_type.image_media import ImageMedia
+from mediaz.media_type.video_media import VideoMedia
 
 
 def get_dtype_from_fmt(enum, fmt):
@@ -15,8 +16,8 @@ def get_dtype_from_ext(enum, ext):
     for category in enum:
         for dtypes_fmt, dtypes_ext in category.value.items():
 
-            if ext in dtypes_ext:
-                return {"category": category.name, "fmt": dtypes_fmt, "ext": ext}
+            if ext.lower() in dtypes_ext:
+                return {"category": category.name, "fmt": dtypes_fmt, "ext": ext.lower()}
     return None
 
 
@@ -44,5 +45,7 @@ def get_media_type(path):
     elif dtype["category"] == DataTypesIn.IMAGE_PIL.name:
         return ImageMedia(dtype["category"]), dtype
 
-    else:
+    elif dtype["category"] == DataTypesIn.IMAGE_RAW.name:
         return ImageMedia(dtype["category"]), dtype
+    else:
+        return VideoMedia(dtype["category"]), dtype
