@@ -1,3 +1,3 @@
 # mediaz
 
-Simple CLI for bulk compression of pictures
+Simple CLI for bulk compression of pictures and videos
