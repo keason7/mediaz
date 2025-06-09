@@ -1,0 +1,27 @@
+in_path: "~/Desktop/code/mediaz_tmp/test_dir/"
+
+out_dtype:
+  image:
+    fmt: JPEG
+    ext: .jpg
+
+  video:
+    fmt: MP4
+    ext: .mp4
+
+compression:
+  JPEG:
+    quality: 70
+    optimize: True
+    progressive: True
+    subsampling: 1
+
+  MP4:
+    vcodec: "libx265"
+    crf: 28
+    pix_fmt: "yuv420p10le"
+    preset: "fast"
+    acodec: "libopus"
+    audio_bitrate: "96k"
+    loglevel: "quiet"
+    libx265_loglevel: "log-level=quiet"

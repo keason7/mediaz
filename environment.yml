@@ -3,10 +3,12 @@ channels:
   - default
   - conda-forge
 dependencies:
-  - python==3.12.11
-  - pip==25.1.1
-  - pillow==11.2.1
   - ffmpeg==7.1.1
   - ffmpeg-python==0.2.0
+  - pillow==11.2.1
+  - pip==25.1.1
+  - python==3.12.11
+  - pyyaml==6.0.2
+  - tqdm==4.67.1
   - pip:
       - rawpy==0.25.0

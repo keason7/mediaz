@@ -40,7 +40,7 @@ class DataTypesIn(Enum):
         "Sony": [".arw", ".srf", ".sr2"],
     }
 
-    VIDEO = {
+    VIDEO_FFMPEG = {
         "MP4": [".mp4"],
         "MPEG": [".mpg", ".mpeg"],
         "AVI": [".avi"],

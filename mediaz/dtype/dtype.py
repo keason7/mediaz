@@ -1,6 +1,6 @@
-from mediaz.dtype.dtype_support import DataTypesIn
-from mediaz.media_type.image_media import ImageMedia
-from mediaz.media_type.video_media import VideoMedia
+from mediaz.dtype.dtype_support import DataTypesIn, DataTypesOut
+from mediaz.mtype.image_media import ImageMedia
+from mediaz.mtype.video_media import VideoMedia
 
 
 def get_dtype_from_fmt(enum, fmt):
@@ -35,17 +35,17 @@ def get_dtype(enum, fmt=None, ext=None):
         return get_dtype_from_ext(enum, ext)
 
 
-def get_media_type(path):
-    ext = path.suffix.lower()
-    dtype = get_dtype(DataTypesIn, ext=ext)
+def get_media_type(path_in, path_out):
+    dtype_in = get_dtype(DataTypesIn, ext=path_in.suffix.lower())
+    dtype_out = get_dtype(DataTypesOut, ext=path_out.suffix.lower())
 
-    if dtype is None:
-        return None, None
+    if dtype_in is None:
+        return None
 
-    elif dtype["category"] == DataTypesIn.IMAGE_PIL.name:
-        return ImageMedia(dtype["category"]), dtype
+    elif dtype_in["category"] == DataTypesIn.IMAGE_PIL.name:
+        return ImageMedia(dtype_in, dtype_out)
 
-    elif dtype["category"] == DataTypesIn.IMAGE_RAW.name:
-        return ImageMedia(dtype["category"]), dtype
+    elif dtype_in["category"] == DataTypesIn.IMAGE_RAW.name:
+        return ImageMedia(dtype_in, dtype_out)
     else:
-        return VideoMedia(dtype["category"]), dtype
+        return VideoMedia(dtype_in, dtype_out)

@@ -1,7 +1,22 @@
 import datetime
 
+import yaml
+
 from mediaz.dtype.dtype import get_dtype
-from mediaz.dtype.dtype_support import DataTypesIn, DataTypesOut
+from mediaz.dtype.dtype_support import DataTypesIn
+
+
+def read_yml(path):
+    """Read YAML file.
+
+    Args:
+        path (str): Input path.
+
+    Returns:
+        dict: YAML dictionary.
+    """
+    with open(path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
 
 
 def get_timestamp():
@@ -31,20 +46,16 @@ def sanitize_paths(path_out_files):
     for path in path_out_files:
         if str(path) not in path_count:
             path_count[str(path)] = 0
-            path_out_files_sanitized.append(str(path))
+            path_out_files_sanitized.append(path)
         else:
             path_count[str(path)] += 1
             new_name = f"{path.stem} ({path_count[str(path)]}){path.suffix}"
-            path_out_files_sanitized.append(str(path.parent / new_name))
+            path_out_files_sanitized.append(path.parent / new_name)
 
     return path_out_files_sanitized
 
 
 def get_files_paths(path_in, path_project, out_dtype):
-    for _, dtype in out_dtype.items():
-        if dtype["fmt"] not in DataTypesOut.keys():
-            raise TypeError(f"Invalid output format. Available output formats: {list(DataTypesOut.keys())}")
-
     path_in_files = [path for path in path_in.rglob("*") if path.is_file()]
     path_out_files = []
 

@@ -1,30 +1,35 @@
+"""Compression entry script."""
+
 import argparse
 from pathlib import Path
 
 from mediaz.compress import bulk_compress
-from mediaz.utils import create_project
+from mediaz.utils import create_project, read_yml
 
 
-def main(path_directory):
-    path_directory = Path(path_directory).expanduser()
+def run(path_config):
+    """Compression run function.
+
+    Args:
+        path_config (str): Config YAML file path.
+    """
+    config = read_yml(path_config)
+
+    path_directory = Path(config["in_path"]).expanduser()
     path_project = create_project(path_directory)
 
-    _out_dtypes = {
-        "image": {"fmt": "JPEG", "ext": ".jpg"},
-        "video": {"fmt": "MP4", "ext": ".mp4"},
-    }
-    bulk_compress(path_directory, path_project, _out_dtypes)
+    bulk_compress(path_directory, path_project, config)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run a style transfer experiment.")
+    parser = argparse.ArgumentParser(description="Run bulk compression.")
     parser.add_argument(
-        "-p",
-        "--path",
+        "-pc",
+        "--path_config",
         type=str,
-        default="~/Desktop/code/imgz_tmp/test_dir/",
-        help="Path of directory to compress.",
+        default="./config.yml",
+        help="Path of config file.",
     )
     args = parser.parse_args()
 
-    main(args.path)
+    run(args.path_config)
