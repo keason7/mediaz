@@ -1,7 +1,11 @@
+"""Supported data types Enums."""
+
 from enum import Enum
 
 
 class DataTypesIn(Enum):
+    """Input supported data types."""
+
     IMAGE_PIL = {
         "BMP": [".bmp"],
         "DDS": [".dds"],
@@ -56,13 +60,31 @@ class DataTypesIn(Enum):
 
 
 class DataTypesOut(Enum):
+    """Output supported data types."""
+
     IMAGE_JPEG = {"JPEG": ".jpg"}
     VIDEO_MP4 = {"MP4": ".mp4"}
 
     @classmethod
     def keys(cls):
+        """Get members keys.
+
+        Args:
+            cls (enum.EnumType): _description_
+
+        Returns:
+            list: List containing keys for each Enum member dictionary.
+        """
         return [key for member in cls for key in member.value.keys()]
 
     @classmethod
     def values(cls):
+        """Get members values.
+
+        Args:
+            cls (enum.EnumType): _description_
+
+        Returns:
+            list: List containing values for each Enum member dictionary.
+        """
         return [value for member in cls for value in member.value.values()]

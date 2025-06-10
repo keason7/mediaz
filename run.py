@@ -18,7 +18,7 @@ def run(path_config):
     path_directory = Path(config["in_path"]).expanduser()
     path_project = create_project(path_directory)
 
-    bulk_compress(path_directory, path_project, config)
+    bulk_compress(config, path_directory, path_project)
 
 
 if __name__ == "__main__":
