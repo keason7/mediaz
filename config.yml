@@ -1,0 +1,54 @@
+in_path: "/path/to/folder/to/compress/"
+
+out_dtype:
+  image:
+    fmt: JPEG
+    ext: .jpg
+
+  video:
+    fmt: MP4
+    ext: .mp4
+
+compress_params:
+  JPEG:
+    # image quality [0, 100]
+    # higher is better quality
+    quality: 70
+
+    # if True, attempts to optimize the huffman tables to reduce file size
+    # huffman tables assigns shorter codes to more frequent symbols
+    # optimize analyze the image to build custom huffman tables (it does not use JPEG standard huffman tables)
+    optimize: True
+
+    # chroma subsampling to reduce color information while preserving brightness
+    # 0 -> 4:4:4, 1 -> 4:2:2, 2 -> 4:2:0
+    subsampling: 1
+
+  MP4:
+    # ffmpeg encoder (h264, hevc, ...)
+    vcodec: "libx265"
+
+    # constant rate factor [0, 51]
+    # a lower value is a higher quality:
+    # 0 is lossless, 23 is default and 51 is worst possible
+    crf: 28
+
+    # pixel format (RGB, YUV, ...)
+    pix_fmt: "yuv420p10le"
+
+    # controls time/CPU effort for compressing the video
+    # faster presets encode quickly but produce larger files and/or lower quality
+    # slower presets encode slow but produce smaller files and/or better quality (better compression options found)
+    preset: "fast"
+
+    # audio encoder (aac, libopus, ...)
+    acodec: "libopus"
+
+    # target audio bitrate quality
+    audio_bitrate: "96k"
+
+    # ffmpeg log level
+    loglevel: "quiet"
+
+    # hevc log level
+    libx265_loglevel: "log-level=quiet"
