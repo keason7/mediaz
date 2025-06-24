@@ -2,9 +2,12 @@
 
 import argparse
 from pathlib import Path
+from pprint import pformat
 
 from mediaz.compress import bulk_compress
-from mediaz.utils import create_project, read_yml
+from mediaz.utils import create_project, get_logger, read_yml
+
+logger = get_logger(__name__)
 
 
 def run(path_config, no_progress_bar):
@@ -14,6 +17,7 @@ def run(path_config, no_progress_bar):
         path_config (str): Config YAML file path.
     """
     config = read_yml(path_config)
+    logger.info("Using config:\n %s \n", pformat(config))
 
     path_directory = Path(config["in_path"]).expanduser()
     path_project = create_project(path_directory)

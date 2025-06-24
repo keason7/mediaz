@@ -1,11 +1,33 @@
 """Utils functions."""
 
 import datetime
+import logging
+import logging.config
 
 import yaml
 
 from mediaz.dtype.dtype import get_dtype
 from mediaz.dtype.dtype_support import DataTypesIn
+
+__logger_config = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "standard",
+            "stream": "ext://sys.stdout",
+        }
+    },
+    "root": {"level": "DEBUG", "handlers": ["console"]},
+}
 
 
 def read_yml(path):
@@ -19,6 +41,19 @@ def read_yml(path):
     """
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+
+def get_logger(name):
+    """Return logger.
+
+    Args:
+        name (str): Logger name.
+
+    Returns:
+        logging.Logger: Logger.
+    """
+    logging.config.dictConfig(__logger_config)
+    return logging.getLogger(name)
 
 
 def get_timestamp():

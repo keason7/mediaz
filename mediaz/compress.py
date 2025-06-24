@@ -1,12 +1,15 @@
 """Compression functions."""
 
 import shutil
+import time
 
 from tqdm import tqdm
 
 from mediaz.dtype.dtype import get_media_obj
 from mediaz.dtype.dtype_support import DataTypesOut
-from mediaz.utils import get_files_paths
+from mediaz.utils import get_files_paths, get_logger
+
+logger = get_logger(__name__)
 
 
 def compress(path_in, path_out, compress_params):
@@ -22,6 +25,7 @@ def compress(path_in, path_out, compress_params):
 
     # unknown input dtype, we copy the input file to output directory
     if media is None:
+        logger.info("Copy file because of unknown input format: %s", path_in)
         path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
         shutil.copy2(path_in, path_out)
 
@@ -56,6 +60,11 @@ def bulk_compress(config, path_in, path_project, no_progress_bar):
     # get all input files and output files paths
     path_in_files, path_out_files = get_files_paths(path_in, path_project, config["out_dtype"])
 
+    logger.info("Starting compression on %s files.", len(path_in_files))
+    start = time.time()
+
     # compression task
     for idx, path_in_file in enumerate(tqdm(path_in_files, disable=no_progress_bar)):
         compress(path_in_file, path_out_files[idx], config["compress_params"])
+
+    logger.info("Task took %s minutes.", (time.time() - start) / 60)
