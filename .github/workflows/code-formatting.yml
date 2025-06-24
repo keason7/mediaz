@@ -1,0 +1,43 @@
+name: Code formatting checks
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  code-check:
+    name: Run code checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: 3.12.11
+          environment-file: environment.yml
+          activate-environment: mediaz
+          auto-activate-base: false
+
+      - name: Install code checks
+        run: |
+          conda activate mediaz
+          pip install flake8 isort black
+
+      - name: Check line length with flake8
+        run: |
+          conda activate mediaz
+          flake8 . --max-line-length=120
+
+      - name: Check import order with isort
+        run: |
+          conda activate mediaz
+          isort . --check-only --diff
+
+      - name: Check code formatting with black
+        run: |
+          conda activate mediaz
+          black . --check --diff --line-length 120
