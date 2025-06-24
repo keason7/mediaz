@@ -31,7 +31,7 @@ def compress(path_in, path_out, compress_params):
         media.write(str(path_out), compress_params)
 
 
-def bulk_compress(config, path_in, path_project):
+def bulk_compress(config, path_in, path_project, no_progress_bar):
     """Compress all supported medias within an input directory.
 
     Args:
@@ -57,5 +57,5 @@ def bulk_compress(config, path_in, path_project):
     path_in_files, path_out_files = get_files_paths(path_in, path_project, config["out_dtype"])
 
     # compression task
-    for idx, path_in_file in enumerate(tqdm(path_in_files)):
+    for idx, path_in_file in enumerate(tqdm(path_in_files, disable=no_progress_bar)):
         compress(path_in_file, path_out_files[idx], config["compress_params"])
