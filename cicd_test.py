@@ -1,5 +1,5 @@
 from pprint import pprint
-
-import ffmpeg
+import math
 
 pprint(["hello"])
+print(math.cos(0.5))
