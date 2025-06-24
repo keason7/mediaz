@@ -1,10 +1,2 @@
-my_vary_long_var_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = 20
-x = (
-    my_vary_long_var_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-    / 2
-)
-
-
-
-
-
+def add_numbers(a:int,b:int)->int:
+ return a+b
