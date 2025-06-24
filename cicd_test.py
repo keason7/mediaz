@@ -1,2 +1,2 @@
-def add_numbers(a:int,b:int)->int:
- return a+b
+def say_hello(name="World"):
+ return f"Hello, {name}!"

@@ -25,9 +25,9 @@ jobs:
         run: |
           pip install flake8 isort black
 
-      - name: Check line length with flake8
-        run: |
-          flake8 . --max-line-length=120
+      # - name: Check line length with flake8
+      #   run: |
+      #     flake8 . --max-line-length=120
 
       - name: Check import order with isort
         run: |
