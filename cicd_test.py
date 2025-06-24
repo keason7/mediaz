@@ -1,5 +1,2 @@
-from pprint import pprint
-import math
-
-pprint(["hello"])
-print(math.cos(0.5))
+my_vary_long_var_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa = 20
+x = my_vary_long_var_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa / 2
