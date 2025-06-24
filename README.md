@@ -32,6 +32,12 @@ Or just use the default config file path.
 python run.py
 ```
 
+Or run a job and store stdout and stderr to a log file.
+
+```bash
+nohup python run.py -nb > /path/to/log_file.log 2>&1 &
+```
+
 From the input folder path to compress, it will create an output compressed folder.
 
 ```txt
