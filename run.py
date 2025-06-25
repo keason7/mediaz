@@ -15,14 +15,15 @@ def run(path_config, no_progress_bar):
 
     Args:
         path_config (str): Config YAML file path.
+        no_progress_bar (bool): Enable or disable tqdm progress bar.
     """
     config = read_yml(path_config)
     logger.info("Using config:\n %s \n", pformat(config))
 
     path_directory = Path(config["in_path"]).expanduser()
-    path_project = create_project(path_directory)
+    path_data, path_summary = create_project(path_directory)
 
-    bulk_compress(config, path_directory, path_project, no_progress_bar)
+    bulk_compress(config, path_directory, path_data, path_summary, no_progress_bar)
 
 
 if __name__ == "__main__":

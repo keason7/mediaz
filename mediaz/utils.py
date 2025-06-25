@@ -73,7 +73,8 @@ def create_project(path_in):
         path_in (pathlib.Path): Input directory path to compress.
 
     Returns:
-        pathlib.Path: Output directory path with compressed files.
+        pathlib.Path: Output data directory path with compressed files.
+        pathlib.Path: Output summary directory path with statistic file.
     """
     timestamp = get_timestamp()
 
@@ -81,15 +82,21 @@ def create_project(path_in):
     path_project = path_in.parent / f"{timestamp}_{path_in.name}"
     path_project.mkdir(mode=0o777, parents=False, exist_ok=False)
 
+    path_data = path_project / "data"
+    path_data.mkdir(mode=0o777, parents=False, exist_ok=False)
+
+    path_summary = path_project / "summary"
+    path_summary.mkdir(mode=0o777, parents=False, exist_ok=False)
+
     # get all nested subdirectories in input root directory
     path_in_directories = [path for path in path_in.rglob("*") if path.is_dir()]
 
     # create all nested directory in output root directory
     for path_directory in path_in_directories:
-        path_project_directories = path_project / path_directory.relative_to(path_in)
+        path_project_directories = path_data / path_directory.relative_to(path_in)
         path_project_directories.mkdir(mode=0o777, parents=False, exist_ok=False)
 
-    return path_project
+    return path_data, path_summary
 
 
 def sanitize_paths(path_out_files):
