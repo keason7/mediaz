@@ -43,6 +43,18 @@ def read_yml(path):
         return yaml.safe_load(f)
 
 
+def write_yml(path, data):
+    """
+    Write YAML file.
+
+    Args:
+        path (str): Path of output file.
+        data (dict): Dictionary to write as YAML.
+    """
+    with open(path, "w", encoding="utf-8") as f:
+        yaml.dump(data, f)
+
+
 def get_logger(name):
     """Return logger.
 
@@ -166,3 +178,22 @@ def get_files_paths(path_in, path_project, out_dtype):
             path_out_files.append(path_out_file.with_suffix(out_dtype["video"]["ext"]))
 
     return path_in_files, sanitize_paths(path_out_files)
+
+
+def update_stats(stats, data):
+    """Update statistics dictionary.
+
+    Args:
+        stats (dict): Statistics dictionary.
+        data (dict): Data dictionary.
+
+    Returns:
+        dict: Updated statistics dictionary.
+    """
+    for key, value in data.items():
+        # stats key list is not empty, reset it
+        if len(stats[key]) > 0:
+            stats[key] = []
+        stats[key].append(value)
+
+    return stats

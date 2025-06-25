@@ -5,7 +5,7 @@ from pathlib import Path
 from pprint import pformat
 
 from mediaz.compress import bulk_compress
-from mediaz.utils import create_project, get_logger, read_yml
+from mediaz.utils import create_project, get_logger, read_yml, write_yml
 
 logger = get_logger(__name__)
 
@@ -22,6 +22,8 @@ def run(path_config, no_progress_bar):
 
     path_directory = Path(config["in_path"]).expanduser()
     path_data, path_summary = create_project(path_directory)
+
+    write_yml(str(path_summary / "config.yml"), config)
 
     bulk_compress(config, path_directory, path_data, path_summary, no_progress_bar)
 

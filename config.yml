@@ -1,5 +1,8 @@
 in_path: "/path/to/folder/to/compress/"
 
+# copy original file if compression result in larger file size
+copy_if_larger: True
+
 out_dtype:
   image:
     fmt: JPEG
