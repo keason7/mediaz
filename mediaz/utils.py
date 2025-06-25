@@ -1,11 +1,33 @@
 """Utils functions."""
 
 import datetime
+import logging
+import logging.config
 
 import yaml
 
 from mediaz.dtype.dtype import get_dtype
 from mediaz.dtype.dtype_support import DataTypesIn
+
+__logger_config = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "standard",
+            "stream": "ext://sys.stdout",
+        }
+    },
+    "root": {"level": "DEBUG", "handlers": ["console"]},
+}
 
 
 def read_yml(path):
@@ -19,6 +41,31 @@ def read_yml(path):
     """
     with open(path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+
+def write_yml(path, data):
+    """
+    Write YAML file.
+
+    Args:
+        path (str): Path of output file.
+        data (dict): Dictionary to write as YAML.
+    """
+    with open(path, "w", encoding="utf-8") as f:
+        yaml.dump(data, f)
+
+
+def get_logger(name):
+    """Return logger.
+
+    Args:
+        name (str): Logger name.
+
+    Returns:
+        logging.Logger: Logger.
+    """
+    logging.config.dictConfig(__logger_config)
+    return logging.getLogger(name)
 
 
 def get_timestamp():
@@ -38,7 +85,8 @@ def create_project(path_in):
         path_in (pathlib.Path): Input directory path to compress.
 
     Returns:
-        pathlib.Path: Output directory path with compressed files.
+        pathlib.Path: Output data directory path with compressed files.
+        pathlib.Path: Output summary directory path with statistic file.
     """
     timestamp = get_timestamp()
 
@@ -46,15 +94,21 @@ def create_project(path_in):
     path_project = path_in.parent / f"{timestamp}_{path_in.name}"
     path_project.mkdir(mode=0o777, parents=False, exist_ok=False)
 
+    path_data = path_project / "data"
+    path_data.mkdir(mode=0o777, parents=False, exist_ok=False)
+
+    path_summary = path_project / "summary"
+    path_summary.mkdir(mode=0o777, parents=False, exist_ok=False)
+
     # get all nested subdirectories in input root directory
     path_in_directories = [path for path in path_in.rglob("*") if path.is_dir()]
 
     # create all nested directory in output root directory
     for path_directory in path_in_directories:
-        path_project_directories = path_project / path_directory.relative_to(path_in)
+        path_project_directories = path_data / path_directory.relative_to(path_in)
         path_project_directories.mkdir(mode=0o777, parents=False, exist_ok=False)
 
-    return path_project
+    return path_data, path_summary
 
 
 def sanitize_paths(path_out_files):
@@ -124,3 +178,46 @@ def get_files_paths(path_in, path_project, out_dtype):
             path_out_files.append(path_out_file.with_suffix(out_dtype["video"]["ext"]))
 
     return path_in_files, sanitize_paths(path_out_files)
+
+
+def update_stats(stats, data):
+    """Update statistics dictionary.
+
+    Args:
+        stats (dict): Statistics dictionary.
+        data (dict): Data dictionary.
+
+    Returns:
+        dict: Updated statistics dictionary.
+    """
+    for key, value in data.items():
+        # stats key list is not empty, reset it
+        if len(stats[key]) > 0:
+            stats[key] = []
+        stats[key].append(value)
+
+    return stats
+
+
+def verify_number_of_files(path_in_directory, path_out_directory):
+    """Verify that two directoies have the same number of files.
+
+    Args:
+        path_in_directory (pathlib.Path): Directory path.
+        path_out_directory (pathlib.Path): Directory path.
+
+    Raises:
+        ValueError: Both paths must be directories.
+        ValueError: Input and output folder do not have the same number of files.
+    """
+    if not path_in_directory.is_dir() or not path_out_directory.is_dir():
+        raise ValueError("Both paths must be directories.")
+
+    count_in_directory = sum(1 for p in path_in_directory.glob("**/*") if p.is_file())
+    count_out_directory = sum(1 for p in path_out_directory.glob("**/*") if p.is_file())
+
+    if count_in_directory != count_out_directory:
+        raise ValueError(
+            "Input and output folder do not have the same number of files: "
+            f"found {count_in_directory} input files and {count_out_directory} output files."
+        )
