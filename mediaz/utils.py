@@ -197,3 +197,27 @@ def update_stats(stats, data):
         stats[key].append(value)
 
     return stats
+
+
+def verify_number_of_files(path_in_directory, path_out_directory):
+    """Verify that two directoies have the same number of files.
+
+    Args:
+        path_in_directory (pathlib.Path): Directory path.
+        path_out_directory (pathlib.Path): Directory path.
+
+    Raises:
+        ValueError: Both paths must be directories.
+        ValueError: Input and output folder do not have the same number of files.
+    """
+    if not path_in_directory.is_dir() or not path_out_directory.is_dir():
+        raise ValueError("Both paths must be directories.")
+
+    count_in_directory = sum(1 for p in path_in_directory.glob("**/*") if p.is_file())
+    count_out_directory = sum(1 for p in path_out_directory.glob("**/*") if p.is_file())
+
+    if count_in_directory != count_out_directory:
+        raise ValueError(
+            "Input and output folder do not have the same number of files: "
+            f"found {count_in_directory} input files and {count_out_directory} output files."
+        )

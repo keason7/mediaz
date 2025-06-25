@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 from mediaz.dtype.dtype import get_media_obj
 from mediaz.dtype.dtype_support import DataTypesOut
-from mediaz.utils import get_files_paths, get_logger, update_stats
+from mediaz.utils import get_files_paths, get_logger, update_stats, verify_number_of_files
 
 logger = get_logger(__name__)
 
@@ -152,3 +152,5 @@ def bulk_compress(config, path_in, path_data, path_summary, no_progress_bar):
     logger.info("Writing statistics file.")
     path_stats = path_summary / "stats.json"
     stats.to_json(str(path_stats))
+
+    verify_number_of_files(path_in, path_data)
