@@ -2,6 +2,7 @@
 
 import rawpy
 from PIL import Image, ImageFile
+from pillow_heif import register_heif_opener
 
 from mediaz.dtype.dtype_support import DataTypesIn
 from mediaz.mtype.abstract_media import AbstractMedia
@@ -18,6 +19,7 @@ class ImageMedia(AbstractMedia):
         Args:
             path (str): Input path.
         """
+        register_heif_opener()
         self.media = Image.open(path)
 
     def __read_raw(self, path):
