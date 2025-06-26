@@ -64,6 +64,7 @@ The JSON stats file contains useful informations about compression process.
 | 0     | /path/to/file.rgba | 30512   | /path/to/file.jpg | 378                 | 378      | 1      |
 | 1     | /path/to/file.jp2  | 262     | /path/to/file.jp2 | 415                 | 262      | 2      |
 | 2     | /path/to/file.gif  | 200     | /path/to/file.gif | 200                 | 200      | 0      |
+| 3     | /path/to/file.jpg  | 262     | /path/to/file.jpg | 262                 | 262      | 3      |
 | ...   | ...                | ...     | ...               | ...                 | ...      | ...    |
 
 Where:
@@ -78,6 +79,7 @@ Where:
   - `0`: Unknown format, input file is copied as output file.
   - `1`: Compressed file has been written as output file.
   - `2`: Compressed file has been replaced by input file as the final output file (`copy_if_larger`=True)
+  - `3`: Is a recognized format with failed compression. File is then copied from input to output.
 
 Since every input format is mapped to an output format, naming issues can occur such as overwrite.
 

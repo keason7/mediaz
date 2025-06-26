@@ -61,43 +61,61 @@ def compress(path_in, path_out, config, stats):
 
     # read, compress and write
     else:
-        media.read(str(path_in))
-        media.write(str(path_out), config["compress_params"])
+        try:
+            media.read(str(path_in))
+            media.write(str(path_out), config["compress_params"])
 
-        # add output path, compressed size and status
-        current_stats = update_stats(
-            current_stats,
-            {
-                "out_path": str(path_out),
-                "out_compressed_size": path_out.stat().st_size,
-                "status": 1,
-            },
-        )
+            # add output path, compressed size and status
+            current_stats = update_stats(
+                current_stats,
+                {
+                    "out_path": str(path_out),
+                    "out_compressed_size": path_out.stat().st_size,
+                    "status": 1,
+                },
+            )
 
-        # compression has failed (larger outpur file size)
-        if path_in.stat().st_size < path_out.stat().st_size:
-            # replace compressed file by the original file
-            if config["copy_if_larger"]:
-                logger.info(
-                    "Compressed file larger than original, compressed file is replaced by original: %s", str(path_in)
-                )
+            # compression has failed (larger outpur file size)
+            if path_in.stat().st_size < path_out.stat().st_size:
+                # replace compressed file by the original file
+                if config["copy_if_larger"]:
+                    logger.info(
+                        "Compressed file larger than original, compressed file is replaced by original: %s",
+                        str(path_in),
+                    )
 
-                # remove compressed file
-                path_out.unlink(missing_ok=False)
+                    # remove compressed file
+                    path_out.unlink(missing_ok=False)
 
-                # copy input file as output file
-                path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
-                shutil.copy2(path_in, path_out)
+                    # copy input file as output file
+                    path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
+                    shutil.copy2(path_in, path_out)
 
-                # update output path and status since it has changed
-                current_stats = update_stats(current_stats, {"out_path": str(path_out), "status": 2})
+                    # update output path and status since it has changed
+                    current_stats = update_stats(current_stats, {"out_path": str(path_out), "status": 2})
 
-            # keep compressed file as output file
-            else:
-                logger.info("Compressed file larger than original: %s", str(path_in))
+                # keep compressed file as output file
+                else:
+                    logger.info("Compressed file larger than original: %s", str(path_in))
 
-        # add final output file size in stats
-        current_stats = update_stats(current_stats, {"out_size": path_out.stat().st_size})
+            # add final output file size in stats
+            current_stats = update_stats(current_stats, {"out_size": path_out.stat().st_size})
+
+        except Exception:
+            logger.error("Failed to compress file: %s, file will be copied.", path_in)
+
+            path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
+            shutil.copy2(path_in, path_out)
+
+            current_stats = update_stats(
+                current_stats,
+                {
+                    "out_path": str(path_out),
+                    "out_compressed_size": path_out.stat().st_size,
+                    "out_size": path_out.stat().st_size,
+                    "status": 3,
+                },
+            )
 
     return pd.concat((stats, pd.DataFrame(data=current_stats)), ignore_index=True)
 
@@ -145,6 +163,7 @@ def bulk_compress(config, path_in, path_data, path_summary, no_progress_bar):
 
     # compression task
     for idx, path_in_file in enumerate(tqdm(path_in_files, disable=no_progress_bar)):
+        logger.info("Compressing file: %s", str(path_in_file))
         stats = compress(path_in_file, path_out_files[idx], config, stats)
 
     logger.info("Task took %s minutes.", (time.time() - start) / 60)
