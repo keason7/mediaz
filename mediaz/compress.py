@@ -13,6 +13,108 @@ from mediaz.utils import get_files_paths, get_logger, update_stats, verify_numbe
 logger = get_logger(__name__)
 
 
+def copy_input(path_in, path_out, current_stats):
+    """Copy unrecognized input file.
+
+    Args:
+        path_in (pathlib.Path): Input file path.
+        path_out (pathlib.Path): Output file path.
+        current_stats (pandas.Dataframe): Statistics dataframe.
+
+    Returns:
+        pandas.Dataframe: Statistics dataframe.
+    """
+    logger.info("Copy file because of unknown input format: %s", path_in)
+
+    # copy input file as output file
+    path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
+    shutil.copy2(path_in, path_out)
+
+    # add output path, sizes and status
+    current_stats = update_stats(
+        current_stats,
+        {
+            "out_path": str(path_out),
+            "out_compressed_size": path_out.stat().st_size,
+            "out_size": path_out.stat().st_size,
+            "status": 0,
+        },
+    )
+    return current_stats
+
+
+def compress_input(path_in, path_out, media, config, current_stats):
+    """Compressed recognized input media file.
+
+    Args:
+        path_in (pathlib.Path): Input file path.
+        path_out (pathlib.Path): Output file path.
+        media (ImageMedia or VideoMedia): Media object.
+        config (dict): Config dictionary.
+        current_stats (pandas.Dataframe): Statistics dataframe.
+
+    Returns:
+        pandas.Dataframe: Statistics dataframe.
+    """
+    try:
+        media.read(str(path_in))
+        media.write(str(path_out), config["compress_params"])
+
+        # add output path, compressed size and status
+        current_stats = update_stats(
+            current_stats,
+            {
+                "out_path": str(path_out),
+                "out_compressed_size": path_out.stat().st_size,
+                "status": 1,
+            },
+        )
+
+        # compression has failed (larger outpur file size)
+        if path_in.stat().st_size < path_out.stat().st_size:
+            # replace compressed file by the original file
+            if config["copy_if_larger"]:
+                logger.info(
+                    "Compressed file larger than original, compressed file is replaced by original: %s",
+                    str(path_in),
+                )
+
+                # remove compressed file
+                path_out.unlink(missing_ok=False)
+
+                # copy input file as output file
+                path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
+                shutil.copy2(path_in, path_out)
+
+                # update output path and status since it has changed
+                current_stats = update_stats(current_stats, {"out_path": str(path_out), "status": 2})
+
+            # keep compressed file as output file
+            else:
+                logger.info("Compressed file larger than original: %s", str(path_in))
+
+        # add final output file size in stats
+        current_stats = update_stats(current_stats, {"out_size": path_out.stat().st_size})
+
+    except Exception:
+        logger.error("Failed to compress file: %s, file will be copied.", path_in)
+
+        path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
+        shutil.copy2(path_in, path_out)
+
+        current_stats = update_stats(
+            current_stats,
+            {
+                "out_path": str(path_out),
+                "out_compressed_size": path_out.stat().st_size,
+                "out_size": path_out.stat().st_size,
+                "status": 3,
+            },
+        )
+
+    return current_stats
+
+
 def compress(path_in, path_out, config, stats):
     """Compress a supported media file.
 
@@ -42,80 +144,11 @@ def compress(path_in, path_out, config, stats):
 
     # unknown input dtype, we copy the input file to output directory
     if media is None:
-        logger.info("Copy file because of unknown input format: %s", path_in)
-
-        # copy input file as output file
-        path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
-        shutil.copy2(path_in, path_out)
-
-        # add output path, sizes and status
-        current_stats = update_stats(
-            current_stats,
-            {
-                "out_path": str(path_out),
-                "out_compressed_size": path_out.stat().st_size,
-                "out_size": path_out.stat().st_size,
-                "status": 0,
-            },
-        )
+        current_stats = copy_input(path_in, path_out, current_stats)
 
     # read, compress and write
     else:
-        try:
-            media.read(str(path_in))
-            media.write(str(path_out), config["compress_params"])
-
-            # add output path, compressed size and status
-            current_stats = update_stats(
-                current_stats,
-                {
-                    "out_path": str(path_out),
-                    "out_compressed_size": path_out.stat().st_size,
-                    "status": 1,
-                },
-            )
-
-            # compression has failed (larger outpur file size)
-            if path_in.stat().st_size < path_out.stat().st_size:
-                # replace compressed file by the original file
-                if config["copy_if_larger"]:
-                    logger.info(
-                        "Compressed file larger than original, compressed file is replaced by original: %s",
-                        str(path_in),
-                    )
-
-                    # remove compressed file
-                    path_out.unlink(missing_ok=False)
-
-                    # copy input file as output file
-                    path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
-                    shutil.copy2(path_in, path_out)
-
-                    # update output path and status since it has changed
-                    current_stats = update_stats(current_stats, {"out_path": str(path_out), "status": 2})
-
-                # keep compressed file as output file
-                else:
-                    logger.info("Compressed file larger than original: %s", str(path_in))
-
-            # add final output file size in stats
-            current_stats = update_stats(current_stats, {"out_size": path_out.stat().st_size})
-
-        except Exception:
-            logger.error("Failed to compress file: %s, file will be copied.", path_in)
-
-            path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
-            shutil.copy2(path_in, path_out)
-
-            current_stats = update_stats(
-                current_stats,
-                {
-                    "out_path": str(path_out),
-                    "out_compressed_size": path_out.stat().st_size,
-                    "out_size": path_out.stat().st_size,
-                    "status": 3,
-                },
-            )
+        current_stats = compress_input(path_in, path_out, media, config, current_stats)
 
     return pd.concat((stats, pd.DataFrame(data=current_stats)), ignore_index=True)
 
