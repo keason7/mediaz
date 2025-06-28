@@ -126,17 +126,19 @@ def sanitize_paths(path_out_files):
     sanitized_paths, path_count = [], {}
 
     for path in path_out_files:
+        path_lowercase = path.parent / f"{path.name.lower()}{path.suffix}"
+
         # output exact path has no been seen
         # initialize counter in dict
-        if str(path) not in path_count:
-            path_count[str(path)] = 0
+        if str(path_lowercase) not in path_count:
+            path_count[str(path_lowercase)] = 0
             sanitized_paths.append(path)
 
         # output path has been seen (duplicate output file path)
         # rename is necessary to avoid file overwrite and increment counter
         else:
-            path_count[str(path)] += 1
-            new_name = f"{path.stem} ({path_count[str(path)]}){path.suffix}"
+            path_count[str(path_lowercase)] += 1
+            new_name = f"{path.stem} ({path_count[str(path_lowercase)]}){path.suffix}"
             sanitized_paths.append(path.parent / new_name)
 
     return sanitized_paths
