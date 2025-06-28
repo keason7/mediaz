@@ -21,7 +21,7 @@ def run(path_config, no_progress_bar):
     logger.info("Using config:\n %s \n", pformat(config))
 
     path_directory = Path(config["in_path"]).expanduser()
-    path_data, path_summary = create_project(path_directory)
+    path_data, path_summary = create_project(path_directory, config["apply_snake_case"])
 
     write_yml(str(path_summary / "config.yml"), config)
 

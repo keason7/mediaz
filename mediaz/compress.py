@@ -8,18 +8,19 @@ from tqdm import tqdm
 
 from mediaz.dtype.dtype import get_media_obj
 from mediaz.dtype.dtype_support import DataTypesOut
-from mediaz.utils import get_files_paths, get_logger, update_stats, verify_number_of_files
+from mediaz.utils import get_files_paths, get_logger, rename_path, update_stats, verify_number_of_files
 
 logger = get_logger(__name__)
 
 
-def copy_input(path_in, path_out, current_stats):
+def copy_input(path_in, path_out, current_stats, apply_snake_case):
     """Copy unrecognized input file.
 
     Args:
         path_in (pathlib.Path): Input file path.
         path_out (pathlib.Path): Output file path.
         current_stats (pandas.Dataframe): Statistics dataframe.
+        apply_snake_case (bool): If true, rename files and directories to snake case standard.
 
     Returns:
         pandas.Dataframe: Statistics dataframe.
@@ -28,6 +29,10 @@ def copy_input(path_in, path_out, current_stats):
 
     # copy input file as output file
     path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
+
+    if apply_snake_case:
+        path_out = rename_path(path_out, path_root=None)
+
     shutil.copy2(path_in, path_out)
 
     # add output path, sizes and status
@@ -43,7 +48,7 @@ def copy_input(path_in, path_out, current_stats):
     return current_stats
 
 
-def compress_input(path_in, path_out, media, config, current_stats):
+def compress_input(path_in, path_out, media, config, current_stats, apply_snake_case):
     """Compressed recognized input media file.
 
     Args:
@@ -52,6 +57,7 @@ def compress_input(path_in, path_out, media, config, current_stats):
         media (ImageMedia or VideoMedia): Media object.
         config (dict): Config dictionary.
         current_stats (pandas.Dataframe): Statistics dataframe.
+        apply_snake_case (bool): If true, rename files and directories to snake case standard.
 
     Returns:
         pandas.Dataframe: Statistics dataframe.
@@ -84,6 +90,10 @@ def compress_input(path_in, path_out, media, config, current_stats):
 
                 # copy input file as output file
                 path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
+
+                if apply_snake_case:
+                    path_out = rename_path(path_out, path_root=None)
+
                 shutil.copy2(path_in, path_out)
 
                 # update output path and status since it has changed
@@ -100,6 +110,10 @@ def compress_input(path_in, path_out, media, config, current_stats):
         logger.error("Failed to compress file: %s, file will be copied.", path_in)
 
         path_out = path_out.parent / f"{path_in.stem}{path_in.suffix.lower()}"
+
+        if apply_snake_case:
+            path_out = rename_path(path_out, path_root=None)
+
         shutil.copy2(path_in, path_out)
 
         current_stats = update_stats(
@@ -144,11 +158,11 @@ def compress(path_in, path_out, config, stats):
 
     # unknown input dtype, we copy the input file to output directory
     if media is None:
-        current_stats = copy_input(path_in, path_out, current_stats)
+        current_stats = copy_input(path_in, path_out, current_stats, config["apply_snake_case"])
 
     # read, compress and write
     else:
-        current_stats = compress_input(path_in, path_out, media, config, current_stats)
+        current_stats = compress_input(path_in, path_out, media, config, current_stats, config["apply_snake_case"])
 
     return pd.concat((stats, pd.DataFrame(data=current_stats)), ignore_index=True)
 
@@ -178,7 +192,7 @@ def bulk_compress(config, path_in, path_data, path_summary, no_progress_bar):
             raise TypeError(f"Invalid output format. Available output formats: {list(DataTypesOut.keys())}")
 
     # get all input files and output files paths
-    path_in_files, path_out_files = get_files_paths(path_in, path_data, config["out_dtype"])
+    path_in_files, path_out_files = get_files_paths(path_in, path_data, config["out_dtype"], config["apply_snake_case"])
 
     stats = pd.DataFrame(
         data={

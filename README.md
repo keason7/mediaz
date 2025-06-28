@@ -102,6 +102,8 @@ in_path: "/path/to/folder/to/compress/"
 
 copy_if_larger: False
 
+apply_snake_case: True
+
 out_dtype:
   image:
     fmt: JPEG
