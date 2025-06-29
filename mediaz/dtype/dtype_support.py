@@ -12,6 +12,7 @@ class DataTypesIn(Enum):
         "DIB": [".dib"],
         "EPS": [".eps", ".ps"],
         "GIF": [".gif"],
+        "HEIC": [".heic"],
         "ICNS": [".icns"],
         "ICO": [".ico"],
         "IM": [".im"],
@@ -22,6 +23,7 @@ class DataTypesIn(Enum):
         "PPM": [".pbm", ".pfm", ".pgm", ".pnm", ".ppm"],
         "SGI": [".bw", ".rgb", ".rgba", ".sgi"],
         "TGA": [".icb", ".tga", ".vda", ".vst"],
+        "THM": [".thm"],
         "TIFF": [".tif", ".tiff"],
         "WEBP": [".webp"],
     }
@@ -45,17 +47,18 @@ class DataTypesIn(Enum):
     }
 
     VIDEO_FFMPEG = {
-        "MP4": [".mp4"],
-        "MPEG": [".mpg", ".mpeg"],
+        "3GP": [".3gp"],
         "AVI": [".avi"],
+        "FLV": [".flv"],
         "MKV": [".mkv"],
         "MOV": [".mov"],
-        "WMV": [".wmv"],
-        "FLV": [".flv"],
-        "WebM": [".webm"],
-        "OGG": [".ogv", ".ogg"],
-        "3GP": [".3gp"],
+        "MP4": [".mp4"],
+        "MPEG": [".mpg", ".mpeg"],
         "MTS": [".mts", ".m2ts"],
+        "OGG": [".ogv", ".ogg"],
+        "VOB": [".vob"],
+        "WebM": [".webm"],
+        "WMV": [".wmv"],
     }
 
 

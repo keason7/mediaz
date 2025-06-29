@@ -1,23 +1,26 @@
 """Image media class."""
 
 import rawpy
-from PIL import Image
+from PIL import Image, ImageFile
+from pillow_heif import register_heif_opener
 
 from mediaz.dtype.dtype_support import DataTypesIn
 from mediaz.mtype.abstract_media import AbstractMedia
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class ImageMedia(AbstractMedia):
     """Image media class to handle image I/O and compression."""
 
-    def __read_pil(self, path, fmt):
+    def __read_pil(self, path):
         """Read an image supported by PIL.
 
         Args:
             path (str): Input path.
-            fmt (str): Input format.
         """
-        self.media = Image.open(path, formats=[fmt])
+        register_heif_opener()
+        self.media = Image.open(path)
 
     def __read_raw(self, path):
         """Read a RAW image.
@@ -54,7 +57,7 @@ class ImageMedia(AbstractMedia):
             TypeError: Unknown input format.
         """
         if self.dtype_in["category"] == DataTypesIn.IMAGE_PIL.name:
-            self.__read_pil(path, self.dtype_in["fmt"])
+            self.__read_pil(path)
 
         elif self.dtype_in["category"] == DataTypesIn.IMAGE_RAW.name:
             self.__read_raw(path)

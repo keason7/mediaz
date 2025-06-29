@@ -3,6 +3,9 @@ in_path: "/path/to/folder/to/compress/"
 # copy original file if compression result in larger file size
 copy_if_larger: True
 
+# apply snake case standard to directories and files names
+apply_snake_case: True
+
 out_dtype:
   image:
     fmt: JPEG
@@ -16,7 +19,7 @@ compress_params:
   JPEG:
     # image quality [0, 100]
     # higher is better quality
-    quality: 70
+    quality: 65
 
     # if True, attempts to optimize the huffman tables to reduce file size
     # huffman tables assigns shorter codes to more frequent symbols
